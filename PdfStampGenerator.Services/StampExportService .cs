@@ -19,16 +19,26 @@ namespace PdfStampGenerator.Services
             Core.Enums.ExportFormat format)
         {
             if (previewElement == null)
-                return;
+                throw new ArgumentException(nameof(previewElement));
+
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentException("File path is required.", nameof(filePath));
+
+            if (!previewElement.Dispatcher.CheckAccess())
+                throw new InvalidOperationException("Export must be colled on the UI thread.");
+
+
 
             previewElement.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             previewElement.Arrange(new Rect(previewElement.DesiredSize));
+            previewElement.UpdateLayout();
 
+            var size = previewElement.RenderSize;
             int width = (int)previewElement.ActualWidth;
             int height = (int)previewElement.ActualHeight;
 
-            if (width == 0 || height == 0)
-                return;
+            if (width <= 0 || height <= 0)
+                throw new InvalidOperationException("Preview element has no renderable size.");
 
             var rtb = new RenderTargetBitmap(
                 width,

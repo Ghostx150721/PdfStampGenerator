@@ -18,10 +18,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PdfStampGenerator.Core\PdfStampGenerator.Core.csproj" />
+    <ProjectReference Include="..\PdfStampGenerator.Services\PdfStampGenerator.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
