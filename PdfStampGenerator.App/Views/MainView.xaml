@@ -94,7 +94,7 @@
                 <TextBlock Text="Stamp Settings"
                            FontWeight="Bold"
                            FontSize="16"
-                           Margin="0,0,0,15"/>
+                           Margin="10,0,0,15"/>
 
                 <!-- Shape -->
                 <TextBlock Text="Shape" FontWeight="SemiBold"/>
@@ -120,9 +120,12 @@
                            FontWeight="SemiBold"
                            Margin="0,15,0,4"/>
 
-                <Slider Minimum="0" Maximum="1" 
-                        Value="{Binding FillOpacity, Mode=TwoWay}" 
-                        TickFrequency="0.05" IsSnapToTickEnabled="True"/>
+                <Slider Minimum="8"
+                        Maximum="72" 
+                        Value="{Binding FontSize, Mode=TwoWay}" 
+                        TickFrequency="2" 
+                        IsSnapToTickEnabled="True" 
+                        Height="30"/>
 
 
                 <TextBlock Text="{Binding FontSize}"
