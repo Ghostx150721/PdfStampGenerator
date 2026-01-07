@@ -1,4 +1,5 @@
 ﻿using PdfStampGenerator.App.Commands;
+using PdfStampGenerator.App.Converters;
 using PdfStampGenerator.Core.Enums;
 using PdfStampGenerator.Core.Models;
 using PdfStampGenerator.Services;
@@ -87,13 +88,197 @@ namespace PdfStampGenerator.App.ViewModels
             }
         }
 
-        public string Title { get => _stamp.Title; set { _stamp.Title = value; OnPropertyChanged(); } }
-        public string Author { get => _stamp.User; set { _stamp.User = value; OnPropertyChanged(); } }
-        public string TimestampText => _stamp.Timestamp.ToString("yyyy-MM-dd HH:mm");
+        public StampContentKind Content1Kind
+        {
+            get => _stamp.Content1.Kind;
+            set
+            {
+                // rule: Content1 cannot be None
+                var normalized = (value == StampContentKind.None) ? StampContentKind.Text : value;
+                if (_stamp.Content1.Kind == normalized) return;
 
-        public Color FillColor { get => _stamp.FillColor; set { _stamp.FillColor = value; OnPropertyChanged(); OnPropertyChanged(nameof(FillBrush)); } }
-        public Color BorderColor { get => _stamp.BorderColor; set { _stamp.BorderColor = value; OnPropertyChanged(); OnPropertyChanged(nameof(BorderBrush)); } }
-        public Color FontColor { get => _stamp.FontColor; set { _stamp.FontColor = value; OnPropertyChanged(); OnPropertyChanged(nameof(FontBrush)); } }
+                _stamp.Content1.Kind = normalized;
+
+                OnPropertyChanged(nameof(Content1Kind));
+                OnPropertyChanged(nameof(Content1Resolved));
+                OnPropertyChanged(nameof(IsContent1TextEnabled));
+                OnPropertyChanged(nameof(PreviewLines));
+            }
+        }
+
+        public string Content1Text
+        {
+            get => _stamp.Content1.Text;
+            set
+            {
+                var v = value ?? string.Empty;
+                if (_stamp.Content1.Text == v) return;
+
+                _stamp.Content1.Text = v;
+
+                // If user types, force Kind=Text (nice UX)
+                if (_stamp.Content1.Kind != StampContentKind.Text)
+                {
+                    _stamp.Content1.Kind = StampContentKind.Text;
+                    OnPropertyChanged(nameof(Content1Kind));
+                    OnPropertyChanged(nameof(IsContent1TextEnabled));
+                }
+
+                OnPropertyChanged(nameof(Content1Text));
+                OnPropertyChanged(nameof(Content1Resolved));
+                OnPropertyChanged(nameof(PreviewLines));
+            }
+        }
+
+        public string Content1Resolved => _stamp.Content1.Resolve("yyyy-MM-dd HH:mm");
+        public bool IsContent1TextEnabled => Content1Kind == StampContentKind.Text;
+
+        public StampContentKind Content2Kind
+        {
+            get => _stamp.Content2.Kind;
+            set
+            {
+                if (_stamp.Content2.Kind == value) return;
+                _stamp.Content2.Kind = value;
+
+                // Optional: clear text if not Text
+                if (value != StampContentKind.Text)
+                    _stamp.Content2.Text = string.Empty;
+
+                OnPropertyChanged(nameof(Content2Kind));
+                OnPropertyChanged(nameof(Content2Text));
+                OnPropertyChanged(nameof(Content2Resolved));
+                OnPropertyChanged(nameof(IsContent2TextEnabled));
+                OnPropertyChanged(nameof(PreviewLines));
+            }
+        }
+
+        public string Content2Text
+        {
+            get => _stamp.Content2.Text;
+            set
+            {
+                var v = value ?? string.Empty;
+                if (_stamp.Content2.Text == v) return;
+
+                _stamp.Content2.Text = v;
+
+                // If user types, force Kind=Text (optional)
+                if (!string.IsNullOrWhiteSpace(v) && _stamp.Content2.Kind != StampContentKind.Text)
+                {
+                    _stamp.Content2.Kind = StampContentKind.Text;
+                    OnPropertyChanged(nameof(Content2Kind));
+                    OnPropertyChanged(nameof(IsContent2TextEnabled));
+                }
+
+                OnPropertyChanged(nameof(Content2Text));
+                OnPropertyChanged(nameof(Content2Resolved));
+                OnPropertyChanged(nameof(PreviewLines));
+            }
+        }
+
+        public string Content2Resolved => _stamp.Content2.Resolve("yyyy-MM-dd HH:mm");
+
+        public bool IsContent2TextEnabled => Content2Kind == StampContentKind.Text;
+
+
+        public StampContentKind Content3Kind
+        {
+            get => _stamp.Content3.Kind;
+            set
+            {
+                if (_stamp.Content3.Kind == value) return;
+                _stamp.Content3.Kind = value;
+
+                // Optional: clear text if not Text
+                if (value != StampContentKind.Text)
+                    _stamp.Content3.Text = string.Empty;
+
+                OnPropertyChanged(nameof(Content3Kind));
+                OnPropertyChanged(nameof(Content3Text));
+                OnPropertyChanged(nameof(Content3Resolved));
+                OnPropertyChanged(nameof(IsContent3TextEnabled));
+                OnPropertyChanged(nameof(PreviewLines));
+            }
+        }
+
+        public string Content3Text
+        {
+            get => _stamp.Content3.Text;
+            set
+            {
+                var v = value ?? string.Empty;
+                if (_stamp.Content3.Text == v) return;
+
+                _stamp.Content3.Text = v;
+
+                // If user types, force Kind=Text (optional)
+                if (!string.IsNullOrWhiteSpace(v) && _stamp.Content3.Kind != StampContentKind.Text)
+                {
+                    _stamp.Content3.Kind = StampContentKind.Text;
+                    OnPropertyChanged(nameof(Content3Kind));
+                    OnPropertyChanged(nameof(IsContent3TextEnabled));
+                }
+
+                OnPropertyChanged(nameof(Content3Text));
+                OnPropertyChanged(nameof(Content3Resolved));
+                OnPropertyChanged(nameof(PreviewLines));
+            }
+        }
+
+        public string Content3Resolved => _stamp.Content3.Resolve("yyyy-MM-dd HH:mm");
+
+        public bool IsContent3TextEnabled => Content3Kind == StampContentKind.Text;
+
+        public ObservableCollection<string> PreviewLines =>
+            new(new[]
+            {
+                Content1Resolved,
+                Content2Resolved,
+                Content3Resolved
+            }.Where(s => !string.IsNullOrWhiteSpace(s)));
+
+        public Color FillColor
+        {
+            get => ColorHex.ToColor(_stamp.FillColorHex);
+            set
+            {
+                var hex = ColorHex.ToHex(value);
+                if (_stamp.FillColorHex == hex) return;
+
+                _stamp.FillColorHex = hex;
+                OnPropertyChanged(nameof(FillColor));
+                OnPropertyChanged(nameof(FillBrush));
+            }
+        }
+
+        public Color BorderColor
+        {
+            get => ColorHex.ToColor(_stamp.BorderColorHex);
+            set
+            {
+                var hex = ColorHex.ToHex(value);
+                if (_stamp.BorderColorHex == hex) return;
+
+                _stamp.BorderColorHex = hex;
+                OnPropertyChanged(nameof(BorderColor));
+                OnPropertyChanged(nameof(BorderBrush));
+            }
+        }
+
+        public Color FontColor
+        {
+            get => ColorHex.ToColor(_stamp.FontColorHex);
+            set
+            {
+                var hex = ColorHex.ToHex(value);
+                if (_stamp.FontColorHex == hex) return;
+
+                _stamp.FontColorHex = hex;
+                OnPropertyChanged(nameof(FontColor));
+                OnPropertyChanged(nameof(FontBrush));
+            }
+        }
 
         public float BorderThickness { get => _stamp.BorderThickness; set { _stamp.BorderThickness = value; OnPropertyChanged(); } }
         public double FontSize { get => _stamp.FontSize; set { _stamp.FontSize = value; OnPropertyChanged(); } }
@@ -102,37 +287,17 @@ namespace PdfStampGenerator.App.ViewModels
         {
             get
             {
-                var brush = new SolidColorBrush(_stamp.FillColor);
+                var brush = new SolidColorBrush(ColorHex.ToColor(_stamp.FillColorHex));
                 brush.Opacity = FillOpacity;
                 return brush;
             }
         }
 
-        public Brush BorderBrush => new SolidColorBrush(_stamp.BorderColor);
-        public Brush FontBrush => new SolidColorBrush(_stamp.FontColor);
-        public FontFamily FontFamily => _stamp.FontFamily;
+        public Brush BorderBrush => new SolidColorBrush(ColorHex.ToColor(_stamp.BorderColorHex));
+        public Brush FontBrush => new SolidColorBrush(ColorHex.ToColor(_stamp.FontColorHex));
+
+        //public FontFamily FontFamily => _stamp.FontFamily;
         public CornerRadius CornerRadius => Shape == StampShape.RoundedRectangle ? new CornerRadius(14) : new CornerRadius(0);
-
-        // ===== FillColor Panel Toggle =====
-        //private bool _isFillColorPanelOpen;
-        //public bool IsFillColorPanelOpen
-        //{
-        //    get => _isFillColorPanelOpen;
-        //    set
-        //    {
-        //        if (SetProperty(ref _isFillColorPanelOpen, value))
-        //        {
-        //            FillColorToggleIcon = value ? "/Resources/up.png" : "/Resources/down.png";
-        //        }
-        //    }
-        //}
-
-        //private string _fillColorToggleIcon = "/Resources/down.png";
-        //public string FillColorToggleIcon
-        //{
-        //    get => _fillColorToggleIcon;
-        //    set => SetProperty(ref _fillColorToggleIcon, value);
-        //}
 
         // ===== Commands =====
         public ICommand SetFillColorCommand { get; }
@@ -141,11 +306,6 @@ namespace PdfStampGenerator.App.ViewModels
         public ICommand ExportPngCommand { get; }
         public ICommand ExportJpegCommand { get; }
         public ICommand ToggleFillColorPanelCommand { get; }
-
-        //private void ToggleFillColorPanel()
-        //{
-        //    IsFillColorPanelOpen = !IsFillColorPanelOpen;
-        //}
 
         // ===== Export Logic =====
         private void ExportPng(FrameworkElement element)

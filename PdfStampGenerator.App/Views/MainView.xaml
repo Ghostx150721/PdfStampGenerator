@@ -105,13 +105,13 @@
 
                 <!-- Title -->
                 <TextBlock Text="Title" FontWeight="SemiBold"/>
-                <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding Content1Text, UpdateSourceTrigger=PropertyChanged}"
                          Height="30"
                          Margin="0,5,0,15"/>
 
                 <!-- Author -->
                 <TextBlock Text="Author" FontWeight="SemiBold"/>
-                <TextBox Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding Content2Text, UpdateSourceTrigger=PropertyChanged}"
                          Height="30"
                          Margin="0,5,0,15"/>
 

@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PdfStampGenerator.Core\PdfStampGenerator.Core.csproj" />
     <ProjectReference Include="..\PdfStampGenerator.Services\PdfStampGenerator.Services.csproj" />
   </ItemGroup>
