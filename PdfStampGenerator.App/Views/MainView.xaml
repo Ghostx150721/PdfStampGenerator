@@ -3,10 +3,219 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PdfStampGenerator.App.Views"
+        xmlns:conv="clr-namespace:PdfStampGenerator.App.Converters"
         mc:Ignorable="d"
-        Title="MainView" Height="450" Width="800">
-    <Grid>
-        
+        Title="Pdf Stamp Generator"
+        Height="500"
+        Width="900">
+
+    <!-- ================= RESOURCES ================= -->
+    <Window.Resources>
+
+        <conv:StampShapeToVisibilityConverter
+            x:Key="BorderVisible"
+            IsCircle="False"/>
+
+        <conv:StampShapeToVisibilityConverter
+            x:Key="CircleVisible"
+            IsCircle="True"/>
+
+        <conv:ColorToBrushConverter x:Key="ColorToBrush"/>
+
+
+        <DataTemplate x:Key="FillColorTemplate">
+            <Button Width="26"
+            Height="26"
+            Margin="4"
+            Background="{Binding}"
+            BorderBrush="Gray"
+            BorderThickness="1"
+            Command="{Binding DataContext.SetFillColorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+            CommandParameter="{Binding}"/>
+        </DataTemplate>
+
+
+        <DataTemplate x:Key="BorderColorTemplate">
+            <Button Width="26"
+            Height="26"
+            Margin="4"
+            Background="{Binding}"
+            BorderBrush="Gray"
+            BorderThickness="1"
+            Command="{Binding DataContext.SetBorderColorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+            CommandParameter="{Binding}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FontColorTemplate">
+            <Button Width="26"
+            Height="26"
+            Margin="4"
+            Background="{Binding}"
+            BorderBrush="Gray"
+            BorderThickness="1"
+            Command="{Binding DataContext.SetFontColorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+            CommandParameter="{Binding}"/>
+        </DataTemplate>
+
+
+
+    </Window.Resources>
+
+    <!-- ================= LAYOUT ================= -->
+    <Grid Margin="10">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ================= CONTROLS ================= -->
+        <ScrollViewer Grid.Column="0"
+                      VerticalScrollBarVisibility="Auto">
+
+            <StackPanel Margin="0,0,20,0">
+
+                <TextBlock Text="Stamp Settings"
+                           FontWeight="Bold"
+                           FontSize="16"
+                           Margin="0,0,0,15"/>
+
+                <!-- Shape -->
+                <TextBlock Text="Shape"/>
+                <ComboBox ItemsSource="{Binding Shapes}"
+                          SelectedItem="{Binding Shape}"
+                          Margin="0,5,0,15"/>
+
+                <!-- Title -->
+                <TextBlock Text="Title"/>
+                <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,5,0,15"/>
+
+                <!-- Author -->
+                <TextBlock Text="Author"/>
+                <TextBox Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,5,0,15"/>
+
+                <TextBlock Text="Fill Color" Margin="0,10,0,4"/>
+
+                <ItemsControl ItemsSource="{Binding PresetColors}"
+              ItemTemplate="{StaticResource FillColorTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+
+
+                <!-- ============ BORDER COLOR ============ -->
+                <TextBlock Text="Border Color"
+                           FontWeight="SemiBold"
+                           Margin="0,15,0,0"/>
+                <ItemsControl ItemsSource="{Binding PresetColors}"
+                              ItemTemplate="{StaticResource BorderColorTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <!-- ============ FONT COLOR ============ -->
+                <TextBlock Text="Font Color"
+                           FontWeight="SemiBold"
+                           Margin="0,15,0,0"/>
+                <ItemsControl ItemsSource="{Binding PresetColors}"
+                              ItemTemplate="{StaticResource FontColorTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ================= PREVIEW ================= -->
+        <Border Grid.Column="1"
+                Padding="20"
+                BorderBrush="#DDD"
+                BorderThickness="1"
+                CornerRadius="6">
+
+            <Canvas Width="320"
+                    Height="160"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                <!-- RECTANGLE -->
+                <Border Width="300"
+                        Height="140"
+                        Visibility="{Binding Shape, Converter={StaticResource BorderVisible}}"
+                        Background="{Binding FillBrush}"
+                        BorderBrush="{Binding BorderBrush}"
+                        BorderThickness="{Binding BorderThickness}"
+                        CornerRadius="{Binding CornerRadius}">
+
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+
+                        <TextBlock Text="{Binding Title}"
+                                   FontFamily="{Binding FontFamily}"
+                                   FontSize="{Binding FontSize}"
+                                   Foreground="{Binding FontBrush}"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+
+                        <TextBlock Text="{Binding Author}"
+                                   Foreground="{Binding FontBrush}"
+                                   HorizontalAlignment="Center"/>
+
+                        <TextBlock Text="{Binding TimestampText}"
+                                   FontSize="10"
+                                   Foreground="{Binding FontBrush}"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- CIRCLE -->
+                <Grid Width="140"
+                      Height="140"
+                      Visibility="{Binding Shape, Converter={StaticResource CircleVisible}}">
+
+                    <Grid.RenderTransform>
+                        <TranslateTransform X="80" Y="10"/>
+                    </Grid.RenderTransform>
+
+                    <Ellipse Fill="{Binding FillBrush}"
+                             Stroke="{Binding BorderBrush}"
+                             StrokeThickness="{Binding BorderThickness}"/>
+
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+
+                        <TextBlock Text="{Binding Title}"
+                                   FontFamily="{Binding FontFamily}"
+                                   FontSize="{Binding FontSize}"
+                                   Foreground="{Binding FontBrush}"
+                                   FontWeight="Bold"
+                                   TextAlignment="Center"/>
+
+                        <TextBlock Text="{Binding Author}"
+                                   Foreground="{Binding FontBrush}"
+                                   TextAlignment="Center"/>
+
+                        <TextBlock Text="{Binding TimestampText}"
+                                   FontSize="10"
+                                   Foreground="{Binding FontBrush}"
+                                   TextAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+
+            </Canvas>
+        </Border>
+
     </Grid>
 </Window>
