@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:PdfStampGenerator.App.Converters"
         mc:Ignorable="d"
-        Title="Pdf Stamp Generator"
-        Height="500"
-        Width="900">
+        Title="PDF Stamp Generator"
+        Background="White"
+        Height="600"
+        Width="920">
 
     <!-- ================= RESOURCES ================= -->
     <Window.Resources>
@@ -20,44 +21,57 @@
             x:Key="CircleVisible"
             IsCircle="True"/>
 
-        <conv:ColorToBrushConverter x:Key="ColorToBrush"/>
+        <!-- ===== Color Buttons ===== -->
+        <DataTemplate x:Key="ColorTemplate">
+            <Button Width="26"
+                    Height="26"
+                    Margin="4"
+                    Background="{Binding}"
+                    BorderBrush="Gray"
+                    BorderThickness="1"
+                    Command="{Binding DataContext.ColorCommand,
+                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding}"/>
+        </DataTemplate>
 
-
+        <!-- ===== Fill Color ===== -->
         <DataTemplate x:Key="FillColorTemplate">
             <Button Width="26"
-            Height="26"
-            Margin="4"
-            Background="{Binding}"
-            BorderBrush="Gray"
-            BorderThickness="1"
-            Command="{Binding DataContext.SetFillColorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-            CommandParameter="{Binding}"/>
+                    Height="26"
+                    Margin="4"
+                    Background="{Binding}"
+                    BorderBrush="Gray"
+                    BorderThickness="1"
+                    Command="{Binding DataContext.SetFillColorCommand,
+                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding}"/>
         </DataTemplate>
 
-
+        <!-- ===== Border Color ===== -->
         <DataTemplate x:Key="BorderColorTemplate">
             <Button Width="26"
-            Height="26"
-            Margin="4"
-            Background="{Binding}"
-            BorderBrush="Gray"
-            BorderThickness="1"
-            Command="{Binding DataContext.SetBorderColorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-            CommandParameter="{Binding}"/>
+                    Height="26"
+                    Margin="4"
+                    Background="{Binding}"
+                    BorderBrush="Gray"
+                    BorderThickness="1"
+                    Command="{Binding DataContext.SetBorderColorCommand,
+                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding}"/>
         </DataTemplate>
 
+        <!-- ===== Font Color ===== -->
         <DataTemplate x:Key="FontColorTemplate">
             <Button Width="26"
-            Height="26"
-            Margin="4"
-            Background="{Binding}"
-            BorderBrush="Gray"
-            BorderThickness="1"
-            Command="{Binding DataContext.SetFontColorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-            CommandParameter="{Binding}"/>
+                    Height="26"
+                    Margin="4"
+                    Background="{Binding}"
+                    BorderBrush="Gray"
+                    BorderThickness="1"
+                    Command="{Binding DataContext.SetFontColorCommand,
+                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding}"/>
         </DataTemplate>
-
-
 
     </Window.Resources>
 
@@ -69,7 +83,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ================= CONTROLS ================= -->
+        <!-- ================= LEFT PANEL ================= -->
         <ScrollViewer Grid.Column="0"
                       VerticalScrollBarVisibility="Auto">
 
@@ -84,22 +98,28 @@
                 <TextBlock Text="Shape"/>
                 <ComboBox ItemsSource="{Binding Shapes}"
                           SelectedItem="{Binding Shape}"
+                          Height="30"
                           Margin="0,5,0,15"/>
 
                 <!-- Title -->
                 <TextBlock Text="Title"/>
                 <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                         Height="30"
                          Margin="0,5,0,15"/>
 
                 <!-- Author -->
                 <TextBlock Text="Author"/>
                 <TextBox Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}"
+                         Height="30"
                          Margin="0,5,0,15"/>
 
-                <TextBlock Text="Fill Color" Margin="0,10,0,4"/>
+                <!-- Fill Color -->
+                <TextBlock Text="Fill Color"
+                           FontWeight="SemiBold"
+                           Margin="0,10,0,4"/>
 
                 <ItemsControl ItemsSource="{Binding PresetColors}"
-              ItemTemplate="{StaticResource FillColorTemplate}">
+                              ItemTemplate="{StaticResource FillColorTemplate}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -107,12 +127,11 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
 
-
-
-                <!-- ============ BORDER COLOR ============ -->
+                <!-- Border Color -->
                 <TextBlock Text="Border Color"
                            FontWeight="SemiBold"
-                           Margin="0,15,0,0"/>
+                           Margin="0,15,0,4"/>
+
                 <ItemsControl ItemsSource="{Binding PresetColors}"
                               ItemTemplate="{StaticResource BorderColorTemplate}">
                     <ItemsControl.ItemsPanel>
@@ -122,10 +141,11 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
 
-                <!-- ============ FONT COLOR ============ -->
+                <!-- Font Color -->
                 <TextBlock Text="Font Color"
                            FontWeight="SemiBold"
-                           Margin="0,15,0,0"/>
+                           Margin="0,15,0,4"/>
+
                 <ItemsControl ItemsSource="{Binding PresetColors}"
                               ItemTemplate="{StaticResource FontColorTemplate}">
                     <ItemsControl.ItemsPanel>
@@ -138,83 +158,107 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- ================= PREVIEW ================= -->
+        <!-- ================= RIGHT PANEL (PREVIEW + EXPORT) ================= -->
         <Border Grid.Column="1"
                 Padding="20"
                 BorderBrush="#DDD"
                 BorderThickness="1"
                 CornerRadius="6">
 
-            <Canvas Width="320"
-                    Height="160"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+            <StackPanel HorizontalAlignment="Center">
 
-                <!-- RECTANGLE -->
-                <Border Width="300"
-                        Height="140"
-                        Visibility="{Binding Shape, Converter={StaticResource BorderVisible}}"
-                        Background="{Binding FillBrush}"
-                        BorderBrush="{Binding BorderBrush}"
-                        BorderThickness="{Binding BorderThickness}"
-                        CornerRadius="{Binding CornerRadius}">
+                <!-- ===== PREVIEW CANVAS ===== -->
+                <Canvas x:Name="StampPreview"
+                        Width="320"
+                        MinHeight="160"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
 
-                    <StackPanel VerticalAlignment="Center"
-                                HorizontalAlignment="Center">
+                    <!-- RECTANGLE / ROUNDED -->
+                    <Border MinWidth="300"
+                            MinHeight="140"
+                            Visibility="{Binding Shape, Converter={StaticResource BorderVisible}}"
+                            Background="{Binding FillBrush}"
+                            BorderBrush="{Binding BorderBrush}"
+                            BorderThickness="{Binding BorderThickness}"
+                            CornerRadius="{Binding CornerRadius}">
 
-                        <TextBlock Text="{Binding Title}"
-                                   FontFamily="{Binding FontFamily}"
-                                   FontSize="{Binding FontSize}"
-                                   Foreground="{Binding FontBrush}"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
+                        <StackPanel VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Margin="20">
 
-                        <TextBlock Text="{Binding Author}"
-                                   Foreground="{Binding FontBrush}"
-                                   HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="{Binding FontSize}"
+                                       FontFamily="{Binding FontFamily}"
+                                       Foreground="{Binding FontBrush}"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
 
-                        <TextBlock Text="{Binding TimestampText}"
-                                   FontSize="10"
-                                   Foreground="{Binding FontBrush}"
-                                   HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
+                            <TextBlock Text="{Binding Author}"
+                                       FontSize="16"
+                                       Foreground="{Binding FontBrush}"
+                                       HorizontalAlignment="Center"/>
 
-                <!-- CIRCLE -->
-                <Grid Width="140"
-                      Height="140"
-                      Visibility="{Binding Shape, Converter={StaticResource CircleVisible}}">
+                            <TextBlock Text="{Binding TimestampText}"
+                                       FontSize="16"
+                                       Foreground="{Binding FontBrush}"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
 
-                    <Grid.RenderTransform>
-                        <TranslateTransform X="80" Y="10"/>
-                    </Grid.RenderTransform>
+                    <!-- CIRCLE -->
+                    <Grid Width="140"
+                          Height="200"
+                          Visibility="{Binding Shape, Converter={StaticResource CircleVisible}}">
 
-                    <Ellipse Fill="{Binding FillBrush}"
-                             Stroke="{Binding BorderBrush}"
-                             StrokeThickness="{Binding BorderThickness}"/>
+                        <Grid.RenderTransform>
+                            <TranslateTransform X="80" Y="10"/>
+                        </Grid.RenderTransform>
 
-                    <StackPanel VerticalAlignment="Center"
-                                HorizontalAlignment="Center">
+                        <Ellipse Fill="{Binding FillBrush}"
+                                 Stroke="{Binding BorderBrush}"
+                                 StrokeThickness="{Binding BorderThickness}"/>
 
-                        <TextBlock Text="{Binding Title}"
-                                   FontFamily="{Binding FontFamily}"
-                                   FontSize="{Binding FontSize}"
-                                   Foreground="{Binding FontBrush}"
-                                   FontWeight="Bold"
-                                   TextAlignment="Center"/>
+                        <StackPanel VerticalAlignment="Center"
+                                    HorizontalAlignment="Center">
 
-                        <TextBlock Text="{Binding Author}"
-                                   Foreground="{Binding FontBrush}"
-                                   TextAlignment="Center"/>
+                            <TextBlock Text="{Binding Title}"
+                                       FontWeight="Bold"
+                                       Foreground="{Binding FontBrush}"
+                                       TextAlignment="Center"/>
 
-                        <TextBlock Text="{Binding TimestampText}"
-                                   FontSize="10"
-                                   Foreground="{Binding FontBrush}"
-                                   TextAlignment="Center"/>
-                    </StackPanel>
-                </Grid>
+                            <TextBlock Text="{Binding Author}"
+                                       Foreground="{Binding FontBrush}"
+                                       TextAlignment="Center"/>
 
-            </Canvas>
+                            <TextBlock Text="{Binding TimestampText}"
+                                       FontSize="10"
+                                       Foreground="{Binding FontBrush}"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+                </Canvas>
+
+                <!-- ===== EXPORT BUTTONS ===== -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,16,0,0"
+                            HorizontalAlignment="Center">
+
+                    <Button Content="Export PNG"
+                            Width="120"
+                            Margin="0,0,10,0"
+                            Command="{Binding ExportPngCommand}"
+                            CommandParameter="{Binding ElementName=StampPreview}"/>
+
+                    <Button Content="Export JPEG"
+                            Width="120"
+                            Command="{Binding ExportJpegCommand}"
+                            CommandParameter="{Binding ElementName=StampPreview}"/>
+
+                </StackPanel>
+
+            </StackPanel>
         </Border>
 
     </Grid>

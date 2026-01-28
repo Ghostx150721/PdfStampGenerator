@@ -1,6 +1,7 @@
 ﻿using PdfStampGenerator.App.Commands;
 using PdfStampGenerator.Core.Enums;
 using PdfStampGenerator.Core.Models;
+using PdfStampGenerator.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +17,8 @@ public class StampPreviewViewModel : INotifyPropertyChanged
     private readonly StampModel _stamp = new();
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    private readonly IStampExportService _exportService;
     private void OnPropertyChanged([CallerMemberName] string? name = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
@@ -124,6 +127,8 @@ public class StampPreviewViewModel : INotifyPropertyChanged
     public ICommand SetFillColorCommand { get; }
     public ICommand SetBorderColorCommand { get; }
     public ICommand SetFontColorCommand { get; }
+    public ICommand ExportPngCommand { get; }
+    public ICommand ExportJpegCommand { get; }
 
 
 
@@ -135,6 +140,25 @@ public class StampPreviewViewModel : INotifyPropertyChanged
         SetFillColorCommand = new RelayCommand<SolidColorBrush>(b => FillColor = b.Color);
         SetBorderColorCommand = new RelayCommand<SolidColorBrush>(b => BorderColor = b.Color);
         SetFontColorCommand = new RelayCommand<SolidColorBrush>(b => FontColor = b.Color);
+
+        _exportService = new StampExportService();
+
+        ExportPngCommand = new RelayCommand<FrameworkElement>(element =>
+        {
+            _exportService.Export(
+                element,
+                "stamp.png",
+                ExportFormat.Png);
+        });
+
+        ExportJpegCommand = new RelayCommand<FrameworkElement>(element =>
+        {
+            _exportService.Export(
+                element,
+                "stamp.jpg",
+                ExportFormat.Jpeg);
+        });
+
 
     }
 }

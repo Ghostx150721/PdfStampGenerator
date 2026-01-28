@@ -17,7 +17,7 @@ namespace PdfStampGenerator.Core.Models
         public DateTime Timestamp { get; set; } = DateTime.Now;
 
         public FontFamily FontFamily { get; set; } = new("Segoe UI");
-        public double FontSize { get; set; } = 16;
+        public double FontSize { get; set; } = 20;
         public Color FontColor { get; set; } = Colors.Green;
     }
 }
