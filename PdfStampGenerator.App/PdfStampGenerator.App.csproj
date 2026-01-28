@@ -10,7 +10,11 @@
 
   <ItemGroup>
     <Folder Include="Resources\" />
-    <Folder Include="Commands\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PdfStampGenerator.Core\PdfStampGenerator.Core.csproj" />
+    <ProjectReference Include="..\PdfStampGenerator.Services\PdfStampGenerator.Services.csproj" />
   </ItemGroup>
 
 </Project>
