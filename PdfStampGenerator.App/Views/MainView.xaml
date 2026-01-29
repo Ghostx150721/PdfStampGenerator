@@ -21,6 +21,8 @@
             x:Key="CircleVisible"
             IsCircle="True"/>
 
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
         <!-- ===== Color Buttons ===== -->
         <DataTemplate x:Key="ColorTemplate">
             <Button Width="26"
@@ -95,65 +97,144 @@
                            Margin="0,0,0,15"/>
 
                 <!-- Shape -->
-                <TextBlock Text="Shape"/>
+                <TextBlock Text="Shape" FontWeight="SemiBold"/>
                 <ComboBox ItemsSource="{Binding Shapes}"
                           SelectedItem="{Binding Shape}"
                           Height="30"
                           Margin="0,5,0,15"/>
 
                 <!-- Title -->
-                <TextBlock Text="Title"/>
+                <TextBlock Text="Title" FontWeight="SemiBold"/>
                 <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                          Height="30"
                          Margin="0,5,0,15"/>
 
                 <!-- Author -->
-                <TextBlock Text="Author"/>
+                <TextBlock Text="Author" FontWeight="SemiBold"/>
                 <TextBox Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}"
                          Height="30"
                          Margin="0,5,0,15"/>
 
-                <!-- Fill Color -->
-                <TextBlock Text="Fill Color"
+                <!-- Font Size -->
+                <TextBlock Text="Font Size"
                            FontWeight="SemiBold"
-                           Margin="0,10,0,4"/>
+                           Margin="0,15,0,4"/>
 
-                <ItemsControl ItemsSource="{Binding PresetColors}"
-                              ItemTemplate="{StaticResource FillColorTemplate}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                <Slider Minimum="0" Maximum="1" 
+                        Value="{Binding FillOpacity, Mode=TwoWay}" 
+                        TickFrequency="0.05" IsSnapToTickEnabled="True"/>
+
+
+                <TextBlock Text="{Binding FontSize}"
+                           HorizontalAlignment="Right"
+                           Margin="0,2,0,5"/>
+
+                <!-- Border Thickness -->
+                <TextBlock Text="Border Thickness"
+                           FontWeight="SemiBold"
+                           Margin="0,15,0,4"/>
+
+                <Slider Minimum="0"
+                        Maximum="20"
+                        Value="{Binding BorderThickness, Mode=TwoWay}"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Height="30"/>
+
+                <TextBlock Text="{Binding BorderThickness}"
+                           HorizontalAlignment="Right"
+                           Margin="0,2,0,5"/>
+
+                <!-- Fill Color -->
+                <Border BorderThickness="0,0,0,2" BorderBrush="LightGray">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Fill Color"
+                       FontWeight="SemiBold"
+                       Margin="0,7,0,7"
+                       VerticalAlignment="Center"/>
+
+                        <ToggleButton x:Name="ToggleFillColors"
+                          Width="15" Height="15" Margin="10,5"
+                          Padding="2">
+                            <Image Source="/Resources/down.png"/>
+                        </ToggleButton>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderThickness="0,0,0,2" BorderBrush="LightGray" Margin="0,0,0,8">
+                    <!-- Panel that toggles -->
+                    <StackPanel Orientation="Vertical" Visibility="{Binding IsChecked, ElementName=ToggleFillColors, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ItemsControl ItemsSource="{Binding PresetColors}"
+                                      ItemTemplate="{StaticResource FillColorTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
 
                 <!-- Border Color -->
-                <TextBlock Text="Border Color"
-                           FontWeight="SemiBold"
-                           Margin="0,15,0,4"/>
+                <Border BorderThickness="0,0,0,2" BorderBrush="LightGray">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Border Color"
+                                    FontWeight="SemiBold"
+                                    Margin="0,7,0,7"
+                                    VerticalAlignment="Center"/>
 
-                <ItemsControl ItemsSource="{Binding PresetColors}"
-                              ItemTemplate="{StaticResource BorderColorTemplate}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                        <ToggleButton x:Name="ToggleBorderColors"
+                                       Width="15" Height="15" Margin="10,5"
+                                       Padding="2">
+                            <Image Source="/Resources/down.png"/>
+                        </ToggleButton>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderThickness="0,0,0,2" BorderBrush="LightGray" Margin="0,0,0,8">
+                    <StackPanel Visibility="{Binding IsChecked, ElementName=ToggleBorderColors, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ItemsControl ItemsSource="{Binding PresetColors}"
+                                        ItemTemplate="{StaticResource BorderColorTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
 
                 <!-- Font Color -->
-                <TextBlock Text="Font Color"
-                           FontWeight="SemiBold"
-                           Margin="0,15,0,4"/>
+                <Border BorderThickness="0,0,0,2" BorderBrush="LightGray">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Font Color"
+                                   FontWeight="SemiBold"
+                                   Margin="0,7,0,7"
+                                   VerticalAlignment="Center"/>
 
-                <ItemsControl ItemsSource="{Binding PresetColors}"
-                              ItemTemplate="{StaticResource FontColorTemplate}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                        <ToggleButton x:Name="ToggleFontColors"
+                                       Width="15" Height="15" Margin="10,5"
+                                       Padding="2">
+                            <Image Source="/Resources/down.png"/>
+                        </ToggleButton>
+                    </StackPanel>
+                    
+                </Border>
+
+                <Border BorderThickness="0,0,0,1" BorderBrush="LightGray" Margin="0,0,0,8">
+                    <StackPanel Visibility="{Binding IsChecked, ElementName=ToggleFontColors, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ItemsControl ItemsSource="{Binding PresetColors}"
+                                        ItemTemplate="{StaticResource FontColorTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                    
 
             </StackPanel>
         </ScrollViewer>
@@ -222,7 +303,7 @@
                                     HorizontalAlignment="Center">
 
                             <TextBlock Text="{Binding Title}"
-                                       FontSize="{Binding FontSize}"
+                                       FontSize="20"
                                        Margin="1"
                                        FontWeight="Bold"
                                        Foreground="{Binding FontBrush}"
