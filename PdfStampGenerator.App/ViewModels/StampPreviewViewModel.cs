@@ -15,41 +15,56 @@ namespace PdfStampGenerator.App.ViewModels;
 public class StampPreviewViewModel : INotifyPropertyChanged
 {
     private readonly StampModel _stamp = new();
+    private readonly IStampExportService _exportService;
+    private readonly IFileDialogService _fileDialogService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private readonly IStampExportService _exportService;
     private void OnPropertyChanged([CallerMemberName] string? name = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public ObservableCollection<StampShape> Shapes { get; } =
-    new ObservableCollection<StampShape>
+    // ===== Constructor =====
+    public StampPreviewViewModel(
+        IStampExportService exportService,
+        IFileDialogService fileDialogService)
+    {
+        _exportService = exportService;
+        _fileDialogService = fileDialogService;
+
+        Shape = StampShape.RoundedRectangle;
+
+        SetFillColorCommand = new RelayCommand<SolidColorBrush>(b => FillColor = b.Color);
+        SetBorderColorCommand = new RelayCommand<SolidColorBrush>(b => BorderColor = b.Color);
+        SetFontColorCommand = new RelayCommand<SolidColorBrush>(b => FontColor = b.Color);
+
+        ExportPngCommand = new RelayCommand<FrameworkElement>(ExportPng);
+        ExportJpegCommand = new RelayCommand<FrameworkElement>(ExportJpeg);
+    }
+
+    // ===== Data =====
+    public ObservableCollection<StampShape> Shapes { get; } = new()
     {
         StampShape.Rectangle,
         StampShape.RoundedRectangle,
         StampShape.Circle
     };
 
-    public ObservableCollection<SolidColorBrush> PresetColors { get; } =
-        new()
-        {
-            Brushes.Black,
-            Brushes.DarkRed,
-            Brushes.Red,
-            Brushes.Orange,
-            Brushes.DarkOrange,
-            Brushes.Green,
-            Brushes.DarkGreen,
-            Brushes.Blue,
-            Brushes.DarkBlue,
-            Brushes.Purple,
-            Brushes.Transparent
-        };
+    public ObservableCollection<SolidColorBrush> PresetColors { get; } = new()
+    {
+        Brushes.Black,
+        Brushes.DarkRed,
+        Brushes.Red,
+        Brushes.Orange,
+        Brushes.DarkOrange,
+        Brushes.Green,
+        Brushes.DarkGreen,
+        Brushes.Blue,
+        Brushes.DarkBlue,
+        Brushes.Purple,
+        Brushes.Transparent
+    };
 
-
-
-
-    // ===== Shape =====
+    // ===== Properties =====
     public StampShape Shape
     {
         get => _stamp.Shape;
@@ -61,7 +76,6 @@ public class StampPreviewViewModel : INotifyPropertyChanged
         }
     }
 
-    // ===== Text =====
     public string Title
     {
         get => _stamp.Title;
@@ -109,8 +123,6 @@ public class StampPreviewViewModel : INotifyPropertyChanged
         }
     }
 
-
-    // ===== Appearance =====
     public Brush FillBrush => new SolidColorBrush(_stamp.FillColor);
     public Brush BorderBrush => new SolidColorBrush(_stamp.BorderColor);
     public Brush FontBrush => new SolidColorBrush(_stamp.FontColor);
@@ -120,45 +132,33 @@ public class StampPreviewViewModel : INotifyPropertyChanged
     public double FontSize => _stamp.FontSize;
 
     public CornerRadius CornerRadius =>
-        Shape == StampShape.RoundedRectangle
-            ? new CornerRadius(14)
-            : new CornerRadius(0);
+        Shape == StampShape.RoundedRectangle ? new CornerRadius(14) : new CornerRadius(0);
 
+    // ===== Commands =====
     public ICommand SetFillColorCommand { get; }
     public ICommand SetBorderColorCommand { get; }
     public ICommand SetFontColorCommand { get; }
     public ICommand ExportPngCommand { get; }
     public ICommand ExportJpegCommand { get; }
 
-
-
-    // ===== Test data =====
-    public StampPreviewViewModel()
+    // ===== Export Logic =====
+    private void ExportPng(FrameworkElement element)
     {
-        Shape = StampShape.RoundedRectangle;
+        var path = _fileDialogService.ShowSaveFileDialog(
+            "PNG Image|*.png", "stamp.png");
 
-        SetFillColorCommand = new RelayCommand<SolidColorBrush>(b => FillColor = b.Color);
-        SetBorderColorCommand = new RelayCommand<SolidColorBrush>(b => BorderColor = b.Color);
-        SetFontColorCommand = new RelayCommand<SolidColorBrush>(b => FontColor = b.Color);
+        if (path == null) return;
 
-        _exportService = new StampExportService();
+        _exportService.Export(element, path, ExportFormat.Png);
+    }
 
-        ExportPngCommand = new RelayCommand<FrameworkElement>(element =>
-        {
-            _exportService.Export(
-                element,
-                "stamp.png",
-                ExportFormat.Png);
-        });
+    private void ExportJpeg(FrameworkElement element)
+    {
+        var path = _fileDialogService.ShowSaveFileDialog(
+            "JPEG Image|*.jpg", "stamp.jpg");
 
-        ExportJpegCommand = new RelayCommand<FrameworkElement>(element =>
-        {
-            _exportService.Export(
-                element,
-                "stamp.jpg",
-                ExportFormat.Jpeg);
-        });
+        if (path == null) return;
 
-
+        _exportService.Export(element, path, ExportFormat.Jpeg);
     }
 }

@@ -8,7 +8,7 @@
         Title="PDF Stamp Generator"
         Background="White"
         Height="600"
-        Width="920">
+        Width="700">
 
     <!-- ================= RESOURCES ================= -->
     <Window.Resources>
@@ -168,20 +168,19 @@
             <StackPanel HorizontalAlignment="Center">
 
                 <!-- ===== PREVIEW CANVAS ===== -->
-                <Canvas x:Name="StampPreview"
-                        Width="320"
-                        MinHeight="160"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+                <Grid x:Name="StampPreview"
+                      Width="320"
+                      MinHeight="160"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+
 
                     <!-- RECTANGLE / ROUNDED -->
-                    <Border MinWidth="300"
-                            MinHeight="140"
+                    <Border MinWidth="260" MinHeight="140" MaxWidth="325"
                             Visibility="{Binding Shape, Converter={StaticResource BorderVisible}}"
-                            Background="{Binding FillBrush}"
-                            BorderBrush="{Binding BorderBrush}"
-                            BorderThickness="{Binding BorderThickness}"
-                            CornerRadius="{Binding CornerRadius}">
+                            Background="{Binding FillBrush}" BorderBrush="{Binding BorderBrush}"
+                            BorderThickness="{Binding BorderThickness}" CornerRadius="{Binding CornerRadius}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center">
 
                         <StackPanel VerticalAlignment="Center"
                                     HorizontalAlignment="Center"
@@ -207,13 +206,13 @@
                     </Border>
 
                     <!-- CIRCLE -->
-                    <Grid Width="140"
-                          Height="200"
+                    <Grid Width="160"
+                          Height="160"
                           Visibility="{Binding Shape, Converter={StaticResource CircleVisible}}">
 
-                        <Grid.RenderTransform>
+                        <!--<Grid.RenderTransform>
                             <TranslateTransform X="80" Y="10"/>
-                        </Grid.RenderTransform>
+                        </Grid.RenderTransform>-->
 
                         <Ellipse Fill="{Binding FillBrush}"
                                  Stroke="{Binding BorderBrush}"
@@ -223,22 +222,25 @@
                                     HorizontalAlignment="Center">
 
                             <TextBlock Text="{Binding Title}"
+                                       FontSize="{Binding FontSize}"
+                                       Margin="1"
                                        FontWeight="Bold"
                                        Foreground="{Binding FontBrush}"
                                        TextAlignment="Center"/>
 
                             <TextBlock Text="{Binding Author}"
                                        Foreground="{Binding FontBrush}"
+                                       FontSize="16"
                                        TextAlignment="Center"/>
 
                             <TextBlock Text="{Binding TimestampText}"
-                                       FontSize="10"
+                                       FontSize="16"
                                        Foreground="{Binding FontBrush}"
                                        TextAlignment="Center"/>
                         </StackPanel>
                     </Grid>
 
-                </Canvas>
+                </Grid>
 
                 <!-- ===== EXPORT BUTTONS ===== -->
                 <StackPanel Orientation="Horizontal"

@@ -1,29 +1,23 @@
 ﻿using PdfStampGenerator.App.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PdfStampGenerator.Services;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace PdfStampGenerator.App.Views
 {
-    /// <summary>
-    /// Interaction logic for MainView.xaml
-    /// </summary>
     public partial class MainView : Window
     {
         public MainView()
         {
             InitializeComponent();
-            DataContext = new StampPreviewViewModel();
+
+            // Create services
+            IStampExportService exportService = new StampExportService();
+            IFileDialogService fileDialogService = new FileDialogService();
+
+            // Inject services
+            DataContext = new StampPreviewViewModel(
+                exportService,
+                fileDialogService);
         }
     }
 }
